@@ -1,3 +1,15 @@
 body {
     text-align: center;
+    margin: -40px;
+}
+
+#level{
+	margin-top: -19px;
+	margin-bottom: 0px;
+	margin-right: 439px;
+	font-size: 18px;
+}
+
+#score{
+	margin-top: -20px;
 }
