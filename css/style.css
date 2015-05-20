@@ -3,13 +3,38 @@ body {
     margin: -40px;
 }
 
-#level{
-	margin-top: -19px;
-	margin-bottom: 0px;
-	margin-right: 439px;
-	font-size: 18px;
+canvas{
+	margin-bottom: -1vh;
 }
 
-#score{
-	margin-top: -20px;
+h2{
+	margin-top: 2vh;
+	margin-bottom: 0;
+	font-size: 4vw;
 }
+
+.column{
+	width: 24vw;
+	height: 7vh;
+/*	border: 1px black solid;
+*/	margin-top: -7vh;
+ 	display:inline-block;
+}
+
+#mainDiv{
+/*	border: 1px red solid;
+*/}
+
+#canvasGems{
+/*    border: 1px black solid;
+*/    width: 75%;
+	fill: white;
+}
+
+/*@media screen and (min-width: 1240px) {
+    h2 {
+       font-size: 20vw;
+    }
+}
+*/
+

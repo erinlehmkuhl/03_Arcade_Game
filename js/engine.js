@@ -26,10 +26,12 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-
+    
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
+    $("body").css("width", "100%");
+    $("canvas").css("width", "75%");
 
 
     /* This function serves as the kickoff point for the game loop itself
@@ -68,7 +70,6 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        reset();
         lastTime = Date.now();
         main();
     }
@@ -150,25 +151,38 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-        /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
+        if (levels.length > 4){ // set to 9 to end at 10
+            //GAME OVER: end the game after 10 rounds
+            player.render();
+            ctx.font="40px Arial";
+            ctx.textAlign= "center";
+            ctx.fillText("BEST IN THE WORLD!", canvas.width/2, canvas.height/2 - 30);
+            ctx.fillText(scoreList.length, canvas.width/2, canvas.height/2 + 30);
+            gameOver = true;
+        }else if (lives == 0){
+            ctx.font="80px Arial";
+            ctx.textAlign= "center";
+            ctx.fillText("GAME OVER!", canvas.width/2, canvas.height/2 - 30);
+            gameOver = true;
+                
+        }else{
+            gem.render();
 
-        player.render();
+            /* Loop through all of the objects within the allEnemies array and call
+             * the render function you have defined.
+             */
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            player.render();
+
+            gem.renderBar();
+        }
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-    function reset() {
-        // noop
-    }
 
-    /* Go ahead and load all of the images we know we're going to need to
+    /* Load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
@@ -177,28 +191,51 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png',
-        'images/char-cat-girl.png',
-        'images/char-horn-girl.png'
+        'images/Rock.png',
+        'images/char-horn-girl.png',
+        'images/char-princess-girl.png',
+        'images/gemBlue.png',
+        'images/gemGreen.png',
+        'images/gemOrange.png',
+        'images/StarSmall.png'
+
     ]);
     Resources.onReady(init);
 
-    /* Assign the canvas' context object to the global variable (the window
+
+    //add in score ticker under canvas
+    var container = "div id= 'column'></div>";
+    var scoreText = "<h2 id= 'score'> Score: <span> 0 </span></h2>";
+    var levelText = "<h2 id= 'level'> Level: <span> 1 </span></h2>";
+    var livesText = "<h2 id= 'lives'> Lives: <span> 3 </span></h2>";
+
+    $("body").append("<div id= 'mainDiv'></div>");
+    $("#mainDiv").append("<div class= 'column' id= 'levelCol'></div>");
+    $("#levelCol").append(scoreText);
+    $("#mainDiv").append("<div class= 'column' id= 'scoreCol'></div>");
+    $("#scoreCol").append(levelText);
+    $("#mainDiv").append("<div class= 'column' id= 'livesCol'></div>");
+    $("#livesCol").append(livesText);
+
+
+
+//add second canvas for gem accumulation
+    var canvasGems = document.createElement('canvas');
+    var ctxGems = canvasGems.getContext('2d');
+
+    
+    canvasGems.width = 505;
+    canvasGems.height = 62;
+    canvasGems.id = 'canvasGems';
+    document.body.appendChild(canvasGems);
+
+
+        /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developer's can use it more easily
      * from within their app.js files.
      */
 
     global.ctx = ctx;
+    global.ctxGems = ctxGems;
+
 })(this);
-
-//add in score ticker under canvas
-var divScore = "<div id= 'scoreArea'></div>"
-var divLevel = "<div id= 'levelArea'></div>"
-var scoreText = "<h2 id= 'score'> Score: <span> 0 </span></h2>";
-var levelText = "<h2 id= 'level'> Level: <span> 1 </span></h2>";
-$("body").append("<div id= 'mainDiv'></div>");
-$("#mainDiv").append(divLevel);
-$("#mainDiv").append(divScore);
-$("#scoreArea").append(scoreText);
-$("#levelArea").append(levelText);
-
