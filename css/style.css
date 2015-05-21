@@ -1,6 +1,6 @@
 body {
     text-align: center;
-    margin: -40px;
+    margin: -25px;
 }
 
 canvas{
@@ -11,6 +11,10 @@ h2{
 	margin-top: 2vh;
 	margin-bottom: 0;
 	font-size: 4vw;
+}
+
+h3{
+	font-size: 3vw;
 }
 
 .column{
@@ -30,11 +34,3 @@ h2{
 */    width: 75%;
 	fill: white;
 }
-
-/*@media screen and (min-width: 1240px) {
-    h2 {
-       font-size: 20vw;
-    }
-}
-*/
-
