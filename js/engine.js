@@ -45,7 +45,7 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
         var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+            dt = (now - lastTime) / 1000.0;// frames per second for each computer
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
@@ -99,6 +99,7 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        gem.update();
         player.update();
     }
     
@@ -151,13 +152,13 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-        if (levels.length > 4){ // set to 9 to end at 10
+        if (levels.length > 9){ // set to 9 to end at 10
             //GAME OVER: end the game after 10 rounds
             player.render();
             ctx.font="40px Arial";
             ctx.textAlign= "center";
             ctx.fillText("BEST IN THE WORLD!", canvas.width/2, canvas.height/2 - 30);
-            ctx.fillText(scoreList.length, canvas.width/2, canvas.height/2 + 30);
+            ctx.fillText(scoreList.length + bonus, canvas.width/2, canvas.height/2 + 30);
             gameOver = true;
         }else if (lives == 0){
             ctx.font="80px Arial";
@@ -178,6 +179,8 @@ var Engine = (function(global) {
             player.render();
 
             gem.renderBar();
+
+            rock.render();
         }
     }
 
@@ -206,14 +209,14 @@ var Engine = (function(global) {
     //add in score ticker under canvas
     var container = "div id= 'column'></div>";
     var scoreText = "<h2 id= 'score'> Score: <span> 0 </span></h2>";
-    var levelText = "<h2 id= 'level'> Level: <span> 1 </span></h2>";
-    var livesText = "<h2 id= 'lives'> Lives: <span> 3 </span></h2>";
+    var levelText = "<h3 id= 'level'> Level: <span> 1 </span></h3>";
+    var livesText = "<h3 id= 'lives'> Lives: <span> 3 </span></h3>";
 
     $("body").append("<div id= 'mainDiv'></div>");
     $("#mainDiv").append("<div class= 'column' id= 'levelCol'></div>");
-    $("#levelCol").append(scoreText);
+    $("#levelCol").append(levelText);
     $("#mainDiv").append("<div class= 'column' id= 'scoreCol'></div>");
-    $("#scoreCol").append(levelText);
+    $("#scoreCol").append(scoreText);
     $("#mainDiv").append("<div class= 'column' id= 'livesCol'></div>");
     $("#livesCol").append(livesText);
 
@@ -237,5 +240,5 @@ var Engine = (function(global) {
 
     global.ctx = ctx;
     global.ctxGems = ctxGems;
-
+    global.canvas = canvas;
 })(this);
