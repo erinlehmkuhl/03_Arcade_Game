@@ -16,7 +16,7 @@ var collide = false;
 
 var occupiedRows = [];//to place bugs
 var allEnemies = [];//used in engine.js & to assign placement in rows
-var enemySpeed = .05;
+var enemySpeed = 0.05;
 var speedList = [];//for bugs so they don't overrun themselves
 var gameOver = false;
 
@@ -28,11 +28,10 @@ var bonusSpeed = 0;//subtracts from bug speed when 9 gems are accumulated
 
 var lives = 3;
 var bonusPoint = false;
+var drawBonus = false;
 var bonus = 0;
 
 //-------------------------------- ENEMIES-----------------------------------
-
-// Enemies our player must avoid
 var Enemy = function() {
     this.randEnemyStartLoc = Math.floor(Math.random()*370) + 1;//inital start spot bewteen 1-605
     this.x = this.randEnemyStartLoc;
@@ -42,25 +41,28 @@ var Enemy = function() {
 };
 
 
-//TODO: multipl by dt
 // Update the enemy's position
 Enemy.prototype.update = function(dt) {
     //if a row is already filled with a bug, set speed to first bug's speed
+    var speedPerRow = speedList[this.whichRow];//the first bug sets the row's speed
+    var curLevel = levels.length;
+
+
     if (occupiedRows[this.whichRow]) {
-        this.x = (this.x + (enemySpeed * speedList[this.whichRow]) + levels.length - bonusSpeed);
+        this.x = (this.x + ((enemySpeed * speedPerRow)*dt) + curLevel - bonusSpeed);
     }else{//set initial speed
-        this.x = (this.x + (enemySpeed * this.speedRandom) + levels.length - bonusSpeed);
+        this.x = (this.x + ((enemySpeed * this.speedRandom)*dt) + curLevel - bonusSpeed);
     }
 
     //randomize re-entry time
-    this.randomLag = Math.random()*5000;
+    this.randomLag = Math.random()*10000;
     if (this.x > 505 + this.randomLag){
         this.x = this.restartRun;
     }
 
     //bounding box information
     boundingBox.call(this, 15, 80, 70, 60);
-};
+}
 
 
 //assign each enemy a y coordinate, gets run upon creation of the instance
@@ -77,16 +79,12 @@ var assignedRow = function(){
 };
 
 
-// Draw the enemy on the screen, required method for game
+//draw enemies on board each frame
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-
-//showBoundingBox.call(this);
-
 }
 
 //-------------------------------- PLAYER-----------------------------------
-// player class and functions
 var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
     this.princessSprite = 'images/char-princess-girl.png';
@@ -94,9 +92,9 @@ var Player = function() {
     this.restartY = 409;
     this.x = this.restartX;
     this.y = this.restartY;
-}
+};
 
-
+//update things associated with player
 Player.prototype.update = function(dt) {
     //bounding box information
     boundingBox.call(this, 14, 63, 72, 75);
@@ -105,19 +103,18 @@ Player.prototype.update = function(dt) {
     //run collision function
     allEnemies.forEach(function(enemy){
         collision(player, enemy);
-    })
+    });
 }
 
 
+//draw player on screen
 Player.prototype.render = function() {
     //draw character
     if (gameOver == false){
        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }else{
         ctx.drawImage(Resources.get(this.princessSprite), this.x, this.y);
-
     }
-
 
     //draw stars representing each level
     var nextStar = 0;
@@ -125,12 +122,11 @@ Player.prototype.render = function() {
         ctx.drawImage(Resources.get(spriteLevelStar), 0 + nextStar, 415);
         nextStar = nextStar + oneBlockHorz/2;
     }
-//showBoundingBox.call(this);
 }
 
 
 //move player based on key input
-//stops player when they run into a wall
+//stops player when they run into a wall or rock
 Player.prototype.handleInput = function(buttonPress) {
     if (buttonPress === "left"){
         if (!(player.y == topEdge && player.x == rock.rockX + oneBlockHorz)){//if rock is to the left of player
@@ -166,18 +162,18 @@ Player.prototype.handleInput = function(buttonPress) {
 }
 
 
-Player.prototype.restart = function(){
-    player.y = player.restartY; //reset player's position
+Player.prototype.restart = function(){//reset player's position
+    player.y = player.restartY; 
     player.x = player.restartX;
 }
 
 //----------------------------------- ROCKS --------------------------------------
-var waterSlots = [0, oneBlockHorz, oneBlockHorz*2, oneBlockHorz*3, oneBlockHorz*4]//slots for rocks
+var waterSlots = [0, oneBlockHorz, oneBlockHorz*2, oneBlockHorz*3, oneBlockHorz*4];//slots for rocks
 
 var Rock = function(){
     this.x = oneBlockHorz*2;
     this.y = -22;
-}
+};
 
 
 Rock.prototype.moveRock = function(){
@@ -199,12 +195,12 @@ Rock.prototype.render = function(){
 
 var Gem = function(){
     this.random();
-}
+};
 
 
 Gem.prototype.random = function(){
     //gets run upon instantiation and in player.handleInput() each time player scores
-    var num = (parseInt(Math.random() * 3))
+    var num = (parseInt(Math.random() * 3));
     this.sprite = gemSpriteList[num];
     var rows = [oneBlockVert, oneBlockVert*2, oneBlockVert*3, oneBlockVert*4];
     var columns = [0, oneBlockHorz, oneBlockHorz*2, oneBlockHorz*3, oneBlockHorz*4];
@@ -235,23 +231,23 @@ Gem.prototype.pickup = function(){//gets called in player.update()
 
 
 Gem.prototype.render = function() {//game board gems get drawn here
-    if (bonusPoint == true){
+    if (drawBonus == true && gemList.length % 4 == 0){//BONUS gets drawn on the board %4 instead of %3 to account for draw time
         ctx.font="60px Arial";
         ctx.textAlign= "center";
         ctx.fillText("BONUS", canvas.width/2, canvas.height/2);
         if (player.y != player.restartY || player.x != player.restartX){//as soon as char moves, clear the word BONUS
             ctx.clearRect(0, 0, canvasGems.width, canvasGems.height);
             bonusPoint = false;
+            drawBonus = false;
         }
     }
-    if (drawGem == true){
+    if (drawGem == true){// draw the gem on the game board
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
-    //showBoundingBox.call(this);
 }
 
 
-Gem.prototype.restart = function(){
+Gem.prototype.restart = function(){//gets run in player.handleInput()
     gem.awardGem();
     awardBonusPoints();
     gem.random();
@@ -260,16 +256,15 @@ Gem.prototype.restart = function(){
 
 //------------------------------ Prizes in Second Canvas --------------------------------------
 
-Gem.prototype.awardGem = function(){//called in gem.restart(). adds gem to list, will immediately be drawn
+Gem.prototype.awardGem = function(){//called in gem.restart(). adds gem to list, will immediately be drawn in render()
     if (gem.gotIt == true && player.y == player.restartY){
-        if (gemList.length < 1){
-            ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);//clears the "Nice Job" message if first gem in list
+        if (gemList.length <= 0){
+            ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);//clears "Gem Pouch" message if first gem in list
             gemList.push(this.sprite);//add one to gemList
             gem.gotIt = false;
         }else{
             gemList.push(this.sprite);//add one to gemList
             gem.gotIt = false;
-
         }
     }
 }
@@ -284,28 +279,28 @@ Gem.prototype.renderBar = function(){//awarded gems get drawn in lower canvas as
 }
 
 
-var awardBonusPoints = function(){
-    //needs gemList to be run first in awardGem
-    //next time score() is run, award points will be included
-    if (gemList.length > 0 && gemList.length % 5 == 0){
+var awardBonusPoints = function(){//gets run in gem.restart()
+    //needs gemList to be run first. that happens in awardGem()
+    //next time score() is run, award points from this function will be included
+    if (gemList.length > 0 && gemList.length % 3 == 0){
         bonus = bonus + 23;
-        bonusPoint = true;//to write the word BONUS on screen  
+        bonusPoint = true;//to write the word BONUS on screen 
     }
-}
+};
 
 
 var bonusSpeedChange = function(){// called in handleInput() for player
     if (gemList.length == 9){
         //bonus points awarded for obtaining 9 gems - slows game by one level
         bonusSpeed = 2;
-        //clear gems
+        //clear gems from lower award area
         gemList = [];
         ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height)
         ctxGems.font="20px Arial";
         ctxGems.textAlign= "center";
-        ctxGems.fillText("NICE JOB - Let's Slow it Down", canvasGems.width/2, canvasGems.height/2);
+        ctxGems.fillText("Fill Your Gem Pouch to Slow the Bugs", canvasGems.width/2, canvasGems.height/2);
     }
-}
+};
 
 //-------------------------------- GAME PLAY STUFF-----------------------------------
 
@@ -314,10 +309,10 @@ var randomizeSpeed = function(){
     speedList = [];
     for (enemy in allEnemies) {
         //make a this.speedRandom attribute for update() to use in this.x
-        allEnemies[enemy].speedRandom = Math.floor(Math.random() * 50) + 5;
+        allEnemies[enemy].speedRandom = Math.floor(Math.random() * 4000) + 1;
         speedList.push(allEnemies[enemy].speedRandom);
     }
-}
+};
 
 
 var boundingBox = function(boxX, boxY, boxW, boxH){
@@ -329,18 +324,22 @@ var boundingBox = function(boxX, boxY, boxW, boxH){
     this.boxY = this.y + boxY;
     this.boxW = boxW;
     this.boxH = boxH;
-}
+};
 
 
 //This is called when the player gets to the top of the screen in handleInput()
 var score = function(){
     scoreList.push(1);// add one to the score depot
     curScore = scoreList.length;
-    $("#score").find("span").text((curScore + bonus));//write the score in html
-}
+    $("#score").find("span").text(curScore + bonus);//write the score in html
+    if (bonusPoint == true){
+        drawBonus = true;
+    }
+};
 
 
-var collision = function(player, enemy){
+var collision = function(player, enemy){// called once for enemies and once for gems
+    //this if statement is courtesy of https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
     if (enemy.boxX < player.boxX + player.boxW &&
         enemy.boxX + enemy.boxW > player.boxX &&
         enemy.boxY < player.boxY + player.boxH &&
@@ -352,36 +351,38 @@ var collision = function(player, enemy){
             crashInto();
         }
     }
-}
+};
 
 
 var levelUp = function(){
     //instructions for leveling up every third point
-    if (curScore %3 === 0){
+    if (curScore % 3 === 0){
         createBugs(1);
         randomizeSpeed();//randomizes the speed of the bugs
         rock.moveRock();
         levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
         $("#level").find("span").text(levels.length);//write level in html
     }
-}
+};
 
 
-var crashInto = function(){
-    //restart player position
-    player.x = player.restartX;
-    player.y = player.restartY;
-    //clear gems
+var crashInto = function(){//called in collision()
+    //clear gems from award list in lower canvas
     gemList = [];
     ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
+    bonus = 0;
     //clear gems from possession
     if (gem.gotIt == true){
         gem.gotIt = false;
     }
+    //restart player position
+    player.x = player.restartX;
+    player.y = player.restartY;
+
     alert("waa waa");
     livesCounter();
     collide = false;
-}
+};
 
 
 var livesCounter = function(){
@@ -389,7 +390,7 @@ var livesCounter = function(){
         lives = lives -1 ;
         $("#lives").find("span").text(lives);//write the lives in html
     }
-}
+};
 
 
 //make lots of bugs.
@@ -419,7 +420,7 @@ document.addEventListener('keyup', function(e) {
 var showBoundingBox = function(){
     ctx.rect(this.boxX, this.boxY, this.boxW, this.boxH);
     ctx.stroke();
-}
+};
 
 //-------------------------------- START IT UP -----------------------------------
 

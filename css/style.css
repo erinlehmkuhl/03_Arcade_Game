@@ -1,6 +1,6 @@
 body {
     text-align: center;
-    margin: -25px;
+    margin: -10px;
 }
 
 canvas{
@@ -20,17 +20,17 @@ h3{
 .column{
 	width: 24vw;
 	height: 7vh;
-/*	border: 1px black solid;
-*/	margin-top: -7vh;
+	/*border: 1px black solid;*/
+	margin-top: -7vh;
  	display:inline-block;
 }
 
 #mainDiv{
-/*	border: 1px red solid;
-*/}
+	/*border: 1px red solid;*/
+}
 
 #canvasGems{
-/*    border: 1px black solid;
-*/    width: 75%;
+	/*border: 1px black solid;*/
+    width: 75%;
 	fill: white;
 }

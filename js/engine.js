@@ -31,7 +31,7 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
     $("body").css("width", "100%");
-    $("canvas").css("width", "75%");
+    $("canvas").css("width", "50%");
 
 
     /* This function serves as the kickoff point for the game loop itself
