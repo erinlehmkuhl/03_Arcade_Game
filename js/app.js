@@ -4,7 +4,7 @@ var ONE_BLOCK_VERT = 84;
 var ONE_BLOCK_HORZ = 100;
 var LEFT_EDGE = 5;
 var RIGHT_EDGE = 405;
-var TOP_EDGE = -11;
+var TOP_EDGE = 73;
 var BOTTOM_EDGE = 409;
 
 var levels = [1];
@@ -129,17 +129,13 @@ Player.prototype.render = function() {
 //stops player when they run into a wall or rock
 Player.prototype.handleInput = function(buttonPress) {
     if (buttonPress === "left"){
-        if (!(player.y == TOP_EDGE && player.x == rock.rockX + ONE_BLOCK_HORZ)){//if rock is to the left of player
-            this.x = this.x - ONE_BLOCK_HORZ;//move to the left normally
-        }
-        if (this.x < LEFT_EDGE){
+        this.x = this.x - ONE_BLOCK_HORZ;//move to the left normally
+        if (this.x < LEFT_EDGE){//unless there is a wall
             this.x = LEFT_EDGE;
         }
     }else if (buttonPress === "right"){
-        if (!(player.y == TOP_EDGE && player.x == rock.rockX - ONE_BLOCK_HORZ)){//if rock is to the right of player
-            this.x = this.x + ONE_BLOCK_HORZ;// move to the right normally
-        }
-        if (this.x > RIGHT_EDGE){
+        this.x = this.x + ONE_BLOCK_HORZ;// move to the right normally
+        if (this.x > RIGHT_EDGE){//unless there is a wall
             this.x = RIGHT_EDGE;
         }
     }else if (buttonPress === "up"){
@@ -152,7 +148,6 @@ Player.prototype.handleInput = function(buttonPress) {
             gem.restart();
             levelUp();
             bonusSpeedChange();
-            //console.log(player.y);
         }
     }else if (buttonPress === "down"){
         this.y = this.y + ONE_BLOCK_VERT;
