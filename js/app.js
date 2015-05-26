@@ -1,11 +1,11 @@
 //-------------------------------- GLOBAL VARIABLES-----------------------------------
 //canvas measurements
-var oneBlockVert = 84;
-var oneBlockHorz = 100;
-var leftEdge = 5;
-var rightEdge = 405;
-var topEdge = -11;
-var bottomEdge = 409;
+var ONE_BLOCK_VERT = 84;
+var ONE_BLOCK_HORZ = 100;
+var LEFT_EDGE = 5;
+var RIGHT_EDGE = 405;
+var TOP_EDGE = -11;
+var BOTTOM_EDGE = 409;
 
 var levels = [1];
 var spriteLevelStar = 'images/StarSmall.png';
@@ -16,14 +16,14 @@ var collide = false;
 
 var occupiedRows = [];//to place bugs
 var allEnemies = [];//used in engine.js & to assign placement in rows
-var enemySpeed = 0.05;
+var ENEMYSPEED = 0.05;
 var speedList = [];//for bugs so they don't overrun themselves
 var gameOver = false;
 
 var drawGem = true;//initialize gem on the board
 var gemList = [];//to hold your gems
-var gemSpriteList = ['images/gemBlue.png', 'images/gemOrange.png', 'images/gemGreen.png'];
-var gemSize = 58;//horizontal measurement for canvas spacing and bounding box
+var GEM_SPRITE_LIST = ['images/gemBlue.png', 'images/gemOrange.png', 'images/gemGreen.png'];
+var GEM_SIZE = 58;//horizontal measurement for canvas spacing and bounding box
 var bonusSpeed = 0;//subtracts from bug speed when 9 gems are accumulated
 
 var lives = 3;
@@ -49,9 +49,9 @@ Enemy.prototype.update = function(dt) {
 
 
     if (occupiedRows[this.whichRow]) {
-        this.x = (this.x + ((enemySpeed * speedPerRow)*dt) + curLevel - bonusSpeed);
+        this.x = (this.x + ((ENEMYSPEED * speedPerRow)*dt) + curLevel - bonusSpeed);
     }else{//set initial speed
-        this.x = (this.x + ((enemySpeed * this.speedRandom)*dt) + curLevel - bonusSpeed);
+        this.x = (this.x + ((ENEMYSPEED * this.speedRandom)*dt) + curLevel - bonusSpeed);
     }
 
     //randomize re-entry time
@@ -69,8 +69,8 @@ Enemy.prototype.update = function(dt) {
 var assignedRow = function(){
     var firstRow = 228;
     var rows = [firstRow, 
-                firstRow-oneBlockVert, 
-                firstRow-(oneBlockVert * 2)];
+                firstRow-ONE_BLOCK_VERT, 
+                firstRow-(ONE_BLOCK_VERT * 2)];
     this.whichRow = allEnemies.length % 3; // so they only occupy three rows
     this.y = rows[this.whichRow];// rows are assigned 0, 1 & 2
     occupiedRows.push(this.y);//assign same speed per row in update().
@@ -88,10 +88,10 @@ Enemy.prototype.render = function() {
 var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
     this.princessSprite = 'images/char-princess-girl.png';
-    this.restartX = 205;
-    this.restartY = 409;
-    this.x = this.restartX;
-    this.y = this.restartY;
+    this.RESTART_X = 205;
+    this.RESTART_Y = 409;
+    this.x = this.RESTART_X;
+    this.y = this.RESTART_Y;
 };
 
 //update things associated with player
@@ -120,7 +120,7 @@ Player.prototype.render = function() {
     var nextStar = 0;
     for (level in levels){
         ctx.drawImage(Resources.get(spriteLevelStar), 0 + nextStar, 415);
-        nextStar = nextStar + oneBlockHorz/2;
+        nextStar = nextStar + ONE_BLOCK_HORZ/2;
     }
 }
 
@@ -129,55 +129,56 @@ Player.prototype.render = function() {
 //stops player when they run into a wall or rock
 Player.prototype.handleInput = function(buttonPress) {
     if (buttonPress === "left"){
-        if (!(player.y == topEdge && player.x == rock.rockX + oneBlockHorz)){//if rock is to the left of player
-            this.x = this.x - oneBlockHorz;//move to the left normally
+        if (!(player.y == TOP_EDGE && player.x == rock.rockX + ONE_BLOCK_HORZ)){//if rock is to the left of player
+            this.x = this.x - ONE_BLOCK_HORZ;//move to the left normally
         }
-        if (this.x < leftEdge){
-            this.x = leftEdge;
+        if (this.x < LEFT_EDGE){
+            this.x = LEFT_EDGE;
         }
     }else if (buttonPress === "right"){
-        if (!(player.y == topEdge && player.x == rock.rockX - oneBlockHorz)){//if rock is to the right of player
-            this.x = this.x + oneBlockHorz;// move to the right normally
+        if (!(player.y == TOP_EDGE && player.x == rock.rockX - ONE_BLOCK_HORZ)){//if rock is to the right of player
+            this.x = this.x + ONE_BLOCK_HORZ;// move to the right normally
         }
-        if (this.x > rightEdge){
-            this.x = rightEdge;
+        if (this.x > RIGHT_EDGE){
+            this.x = RIGHT_EDGE;
         }
     }else if (buttonPress === "up"){
-        if (!(player.y == rock.rockY + oneBlockVert && player.x == rock.rockX)){//if rock in the way vertically
-            this.y = this.y - oneBlockVert;// move up normally
+        if (!(player.y == rock.rockY + ONE_BLOCK_VERT && player.x == rock.rockX)){//if rock in the way vertically
+            this.y = this.y - ONE_BLOCK_VERT;// move up normally
         }
-        if (this.y < topEdge){// points, gems and levels accrued here
+        if (this.y < TOP_EDGE){// points, gems and levels accrued here
             score();
             player.restart();
             gem.restart();
             levelUp();
             bonusSpeedChange();
+            //console.log(player.y);
         }
     }else if (buttonPress === "down"){
-        this.y = this.y + oneBlockVert;
-        if (this.y > bottomEdge){
-          this.y = bottomEdge;
+        this.y = this.y + ONE_BLOCK_VERT;
+        if (this.y > BOTTOM_EDGE){
+          this.y = BOTTOM_EDGE;
         }
     }
 }
 
 
 Player.prototype.restart = function(){//reset player's position
-    player.y = player.restartY; 
-    player.x = player.restartX;
+    player.y = player.RESTART_Y; 
+    player.x = player.RESTART_X;
 }
 
 //----------------------------------- ROCKS --------------------------------------
-var waterSlots = [0, oneBlockHorz, oneBlockHorz*2, oneBlockHorz*3, oneBlockHorz*4];//slots for rocks
+var WATER_SLOTS = [0, ONE_BLOCK_HORZ, ONE_BLOCK_HORZ*2, ONE_BLOCK_HORZ*3, ONE_BLOCK_HORZ*4];//slots for rocks
 
 var Rock = function(){
-    this.x = oneBlockHorz*2;
+    this.x = ONE_BLOCK_HORZ*2;
     this.y = -22;
 };
 
 
 Rock.prototype.moveRock = function(){
-    this.x = waterSlots[parseInt(Math.random()*5)];
+    this.x = WATER_SLOTS[parseInt(Math.random()*5)];
 
     var alignmentY = 11;//the pngs are a little messy - these are for collisions
     var alignmentX = 5;//the pngs are a little messy - these are for collisions
@@ -201,9 +202,9 @@ var Gem = function(){
 Gem.prototype.random = function(){
     //gets run upon instantiation and in player.handleInput() each time player scores
     var num = (parseInt(Math.random() * 3));
-    this.sprite = gemSpriteList[num];
-    var rows = [oneBlockVert, oneBlockVert*2, oneBlockVert*3, oneBlockVert*4];
-    var columns = [0, oneBlockHorz, oneBlockHorz*2, oneBlockHorz*3, oneBlockHorz*4];
+    this.sprite = GEM_SPRITE_LIST[num];
+    var rows = [ONE_BLOCK_VERT, ONE_BLOCK_VERT*2, ONE_BLOCK_VERT*3, ONE_BLOCK_VERT*4];
+    var columns = [0, ONE_BLOCK_HORZ, ONE_BLOCK_HORZ*2, ONE_BLOCK_HORZ*3, ONE_BLOCK_HORZ*4];
     var randRow = parseInt(Math.random()*4);
     var randCol = parseInt(Math.random()*5);
     this.row = rows[randRow];
@@ -214,7 +215,7 @@ Gem.prototype.random = function(){
 
 
 Gem.prototype.update = function(){
-    boundingBox.call(this, 20, 53, gemSize, 65);
+    boundingBox.call(this, 20, 53, GEM_SIZE, 65);
     collision(player, gem);
     gem.pickup();
 }
@@ -235,7 +236,7 @@ Gem.prototype.render = function() {//game board gems get drawn here
         ctx.font="60px Arial";
         ctx.textAlign= "center";
         ctx.fillText("BONUS", canvas.width/2, canvas.height/2);
-        if (player.y != player.restartY || player.x != player.restartX){//as soon as char moves, clear the word BONUS
+        if (player.y != player.RESTART_Y || player.x != player.RESTART_X){//as soon as char moves, clear the word BONUS
             ctx.clearRect(0, 0, canvasGems.width, canvasGems.height);
             bonusPoint = false;
             drawBonus = false;
@@ -257,7 +258,7 @@ Gem.prototype.restart = function(){//gets run in player.handleInput()
 //------------------------------ Prizes in Second Canvas --------------------------------------
 
 Gem.prototype.awardGem = function(){//called in gem.restart(). adds gem to list, will immediately be drawn in render()
-    if (gem.gotIt == true && player.y == player.restartY){
+    if (gem.gotIt == true && player.y == player.RESTART_Y){
         if (gemList.length <= 0){
             ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);//clears "Gem Pouch" message if first gem in list
             gemList.push(this.sprite);//add one to gemList
@@ -274,7 +275,7 @@ Gem.prototype.renderBar = function(){//awarded gems get drawn in lower canvas as
     var nextGem = 0;
         for (i in gemList){
                 ctxGems.drawImage(Resources.get(gemList[i]), (-22 + nextGem), -55);//
-                nextGem = nextGem + gemSize;
+                nextGem = nextGem + GEM_SIZE;
     }
 }
 
@@ -376,8 +377,8 @@ var crashInto = function(){//called in collision()
         gem.gotIt = false;
     }
     //restart player position
-    player.x = player.restartX;
-    player.y = player.restartY;
+    player.x = player.RESTART_X;
+    player.y = player.RESTART_Y;
 
     alert("waa waa");
     livesCounter();
