@@ -41,6 +41,18 @@ var Enemy = function() {
 };
 
 
+//create variable speeds for the bugs per round
+Enemy.prototype.randomizeSpeed = function(){
+    speedList = [];
+    console.log(allEnemies);
+    for (enemy in allEnemies) {
+        //make a this.speedRandom attribute for update() to use in this.x
+        allEnemies[enemy].speedRandom = Math.floor(Math.random() * 4000) + 1;
+        speedList.push(allEnemies[enemy].speedRandom);
+    }
+}
+
+
 // Update the enemy's position
 Enemy.prototype.update = function(dt) {
     //if a row is already filled with a bug, set speed to first bug's speed
@@ -300,16 +312,6 @@ var bonusSpeedChange = function(){// called in handleInput() for player
 
 //-------------------------------- GAME PLAY STUFF-----------------------------------
 
-//create variable speeds for the bugs per round
-var randomizeSpeed = function(){
-    speedList = [];
-    for (enemy in allEnemies) {
-        //make a this.speedRandom attribute for update() to use in this.x
-        allEnemies[enemy].speedRandom = Math.floor(Math.random() * 4000) + 1;
-        speedList.push(allEnemies[enemy].speedRandom);
-    }
-};
-
 
 var boundingBox = function(boxX, boxY, boxW, boxH){
     //make sure to use .call(this) when using this function in the update() function
@@ -354,7 +356,9 @@ var levelUp = function(){
     //instructions for leveling up every third point
     if (curScore % 3 === 0){
         createBugs(1);
-        randomizeSpeed();//randomizes the speed of the bugs
+        for(var i = 0; i < allEnemies.length; i++){
+            allEnemies[i].randomizeSpeed();
+        }
         rock.moveRock();
         levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
         $("#level").find("span").text(levels.length);//write level in html
@@ -422,7 +426,9 @@ var showBoundingBox = function(){
 
 //instantiate enemy objects
 createBugs(1);
-randomizeSpeed();
+for(var i = 0; i < allEnemies.length; i++){
+    allEnemies[i].randomizeSpeed();
+}
 
 //instantiate player object
 var player = new Player();
