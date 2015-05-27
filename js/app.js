@@ -105,16 +105,51 @@ var Player = function() {
     this.y = this.RESTART_Y;
 };
 
+
+Player.prototype.collision = function(enemy){// called once for enemies and once for gems
+    //this if statement is courtesy of https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+    if (enemy.boxX < this.boxX + this.boxW &&
+        enemy.boxX + enemy.boxW > this.boxX &&
+        enemy.boxY < this.boxY + this.boxH &&
+        enemy.boxH + enemy.boxY > this.boxY) {
+        //collision detected!
+        collide = true;
+
+        if (enemy.constructor == Enemy){
+            this.crashInto();
+        }
+    }
+}
+
+
+Player.prototype.crashInto = function(){//called in collision()
+    //clear gems from award list in lower canvas
+    gemList = [];
+    ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
+    bonus = 0;
+    //clear gems from possession
+    if (gem.gotIt == true){
+        gem.gotIt = false;
+    }
+    //restart player position
+    this.x = player.RESTART_X;
+    this.y = player.RESTART_Y;
+
+    alert("waa waa");
+    livesCounter();
+    collide = false;
+}
+
+
 //update things associated with player
-Player.prototype.update = function(dt) {
+Player.prototype.update = function() {
     //bounding box information
     boundingBox.call(this, 14, 63, 72, 75);
-
-
+    
     //run collision function
-    allEnemies.forEach(function(enemy){
-        collision(player, enemy);
-    });
+    for (var i = 0; i < allEnemies.length; i++){
+        this.collision(allEnemies[i]);
+    }
 }
 
 
@@ -154,7 +189,7 @@ Player.prototype.handleInput = function(buttonPress) {
             this.y = this.y - ONE_BLOCK_VERT;// move up normally
         }
         if (this.y < TOP_EDGE){// points, gems and levels accrued here
-            score();
+            this.score();
             player.restart();
             gem.restart();
             levelUp();
@@ -172,6 +207,17 @@ Player.prototype.handleInput = function(buttonPress) {
 Player.prototype.restart = function(){//reset player's position
     player.y = player.RESTART_Y; 
     player.x = player.RESTART_X;
+}
+
+
+//This is called when the player gets to the top of the screen in handleInput()
+Player.prototype.score = function(){
+    scoreList.push(1);// add one to the score depot
+    curScore = scoreList.length;
+    $("#score").find("span").text(curScore + bonus);//write the score in html
+    if (bonusPoint == true){
+        drawBonus = true;
+    }
 }
 
 //----------------------------------- ROCKS --------------------------------------
@@ -222,7 +268,7 @@ Gem.prototype.random = function(){
 
 Gem.prototype.update = function(){
     boundingBox.call(this, 20, 53, GEM_SIZE, 65);
-    collision(player, gem);
+    player.collision(gem);
     gem.pickup();
 }
 
@@ -288,7 +334,7 @@ Gem.prototype.renderBar = function(){//awarded gems get drawn in lower canvas as
 
 Gem.prototype.awardBonusPoints = function(){//gets run in gem.restart()
     //needs gemList to be run first. that happens in awardGem()
-    //next time score() is run, award points from this function will be included
+    //next time player.score() is run, award points from this function will be included
     if (gemList.length > 0 && gemList.length % 3 == 0){
         bonus = bonus + 23;
         bonusPoint = true;//to write the word BONUS on screen 
@@ -324,33 +370,6 @@ var boundingBox = function(boxX, boxY, boxW, boxH){
 };
 
 
-//This is called when the player gets to the top of the screen in handleInput()
-var score = function(){
-    scoreList.push(1);// add one to the score depot
-    curScore = scoreList.length;
-    $("#score").find("span").text(curScore + bonus);//write the score in html
-    if (bonusPoint == true){
-        drawBonus = true;
-    }
-};
-
-
-var collision = function(player, enemy){// called once for enemies and once for gems
-    //this if statement is courtesy of https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
-    if (enemy.boxX < player.boxX + player.boxW &&
-        enemy.boxX + enemy.boxW > player.boxX &&
-        enemy.boxY < player.boxY + player.boxH &&
-        enemy.boxH + enemy.boxY > player.boxY) {
-        // collision detected!
-        collide = true;
-
-        if (enemy.constructor == Enemy){
-            crashInto();
-        }
-    }
-};
-
-
 var levelUp = function(){
     //instructions for leveling up every third point
     if (curScore % 3 === 0){
@@ -362,25 +381,6 @@ var levelUp = function(){
         levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
         $("#level").find("span").text(levels.length);//write level in html
     }
-};
-
-
-var crashInto = function(){//called in collision()
-    //clear gems from award list in lower canvas
-    gemList = [];
-    ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
-    bonus = 0;
-    //clear gems from possession
-    if (gem.gotIt == true){
-        gem.gotIt = false;
-    }
-    //restart player position
-    player.x = player.RESTART_X;
-    player.y = player.RESTART_Y;
-
-    alert("waa waa");
-    livesCounter();
-    collide = false;
 };
 
 
