@@ -44,7 +44,6 @@ var Enemy = function() {
 //create variable speeds for the bugs per round
 Enemy.prototype.randomizeSpeed = function(){
     speedList = [];
-    console.log(allEnemies);
     for (enemy in allEnemies) {
         //make a this.speedRandom attribute for update() to use in this.x
         allEnemies[enemy].speedRandom = Math.floor(Math.random() * 4000) + 1;
@@ -159,7 +158,7 @@ Player.prototype.handleInput = function(buttonPress) {
             player.restart();
             gem.restart();
             levelUp();
-            bonusSpeedChange();
+            gem.bonusSpeedChange();
         }
     }else if (buttonPress === "down"){
         this.y = this.y + ONE_BLOCK_VERT;
@@ -256,9 +255,9 @@ Gem.prototype.render = function() {//game board gems get drawn here
 
 
 Gem.prototype.restart = function(){//gets run in player.handleInput()
-    gem.awardGem();
-    awardBonusPoints();
-    gem.random();
+    this.awardGem();
+    this.awardBonusPoints();
+    this.random();
     drawGem = true;
 }
 
@@ -287,17 +286,17 @@ Gem.prototype.renderBar = function(){//awarded gems get drawn in lower canvas as
 }
 
 
-var awardBonusPoints = function(){//gets run in gem.restart()
+Gem.prototype.awardBonusPoints = function(){//gets run in gem.restart()
     //needs gemList to be run first. that happens in awardGem()
     //next time score() is run, award points from this function will be included
     if (gemList.length > 0 && gemList.length % 3 == 0){
         bonus = bonus + 23;
         bonusPoint = true;//to write the word BONUS on screen 
     }
-};
+}
 
 
-var bonusSpeedChange = function(){// called in handleInput() for player
+Gem.prototype.bonusSpeedChange = function(){// called in handleInput() for player
     if (gemList.length == 9){
         //bonus points awarded for obtaining 9 gems - slows game by one level
         bonusSpeed = 2;
@@ -308,7 +307,7 @@ var bonusSpeedChange = function(){// called in handleInput() for player
         ctxGems.textAlign= "center";
         ctxGems.fillText("Fill Your Gem Pouch to Slow the Bugs", canvasGems.width/2, canvasGems.height/2);
     }
-};
+}
 
 //-------------------------------- GAME PLAY STUFF-----------------------------------
 
