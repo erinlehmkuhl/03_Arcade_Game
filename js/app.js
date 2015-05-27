@@ -16,7 +16,7 @@ var collide = false;
 
 var occupiedRows = [];//to place bugs
 var allEnemies = [];//used in engine.js & to assign placement in rows
-var ENEMYSPEED = 0.05;
+var ENEMY_SPEED = 0.05;
 var speedList = [];//for bugs so they don't overrun themselves
 var gameOver = false;
 
@@ -37,7 +37,7 @@ var Enemy = function() {
     this.x = this.randEnemyStartLoc;
     this.sprite = 'images/enemy-bug.png';
     this.restartRun = -100;
-    this.y = assignedRow.call(this);
+    this.y = this.assignedRow();
 };
 
 
@@ -49,9 +49,9 @@ Enemy.prototype.update = function(dt) {
 
 
     if (occupiedRows[this.whichRow]) {
-        this.x = (this.x + ((ENEMYSPEED * speedPerRow)*dt) + curLevel - bonusSpeed);
+        this.x = (this.x + ((ENEMY_SPEED * speedPerRow)*dt) + curLevel - bonusSpeed);
     }else{//set initial speed
-        this.x = (this.x + ((ENEMYSPEED * this.speedRandom)*dt) + curLevel - bonusSpeed);
+        this.x = (this.x + ((ENEMY_SPEED * this.speedRandom)*dt) + curLevel - bonusSpeed);
     }
 
     //randomize re-entry time
@@ -66,17 +66,17 @@ Enemy.prototype.update = function(dt) {
 
 
 //assign each enemy a y coordinate, gets run upon creation of the instance
-var assignedRow = function(){
-    var firstRow = 228;
-    var rows = [firstRow, 
-                firstRow-ONE_BLOCK_VERT, 
-                firstRow-(ONE_BLOCK_VERT * 2)];
+Enemy.prototype.assignedRow = function(){
+    var FIRST_ROW = 228;
+    var rows = [FIRST_ROW, 
+                FIRST_ROW-ONE_BLOCK_VERT, 
+                FIRST_ROW-(ONE_BLOCK_VERT * 2)];
     this.whichRow = allEnemies.length % 3; // so they only occupy three rows
     this.y = rows[this.whichRow];// rows are assigned 0, 1 & 2
     occupiedRows.push(this.y);//assign same speed per row in update().
 
     return this.y;
-};
+}
 
 
 //draw enemies on board each frame
