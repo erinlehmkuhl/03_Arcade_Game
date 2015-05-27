@@ -8,8 +8,8 @@ var TOP_EDGE = 73;
 var BOTTOM_EDGE = 409;
 
 var levels = [1];
-var spriteLevelStar = 'images/StarSmall.png';
-var spriteRock = 'images/Rock.png';
+var SPRITE_STAR_LEVEL = 'images/StarSmall.png';
+var SPRITE_ROCK = 'images/Rock.png';
 var scoreList = [];
 var curScore = scoreList.length;
 var collide = false;
@@ -87,7 +87,7 @@ Enemy.prototype.render = function() {
 //-------------------------------- PLAYER-----------------------------------
 var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
-    this.princessSprite = 'images/char-princess-girl.png';
+    this.PRINCESS_SPRITE = 'images/char-princess-girl.png';
     this.RESTART_X = 205;
     this.RESTART_Y = 409;
     this.x = this.RESTART_X;
@@ -113,13 +113,13 @@ Player.prototype.render = function() {
     if (gameOver == false){
        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }else{
-        ctx.drawImage(Resources.get(this.princessSprite), this.x, this.y);
+        ctx.drawImage(Resources.get(this.PRINCESS_SPRITE), this.x, this.y);
     }
 
     //draw stars representing each level
     var nextStar = 0;
     for (level in levels){
-        ctx.drawImage(Resources.get(spriteLevelStar), 0 + nextStar, 415);
+        ctx.drawImage(Resources.get(SPRITE_STAR_LEVEL), 0 + nextStar, 415);
         nextStar = nextStar + ONE_BLOCK_HORZ/2;
     }
 }
@@ -183,7 +183,7 @@ Rock.prototype.moveRock = function(){
 
 
 Rock.prototype.render = function(){
-    ctx.drawImage(Resources.get(spriteRock), this.x, this.y);
+    ctx.drawImage(Resources.get(SPRITE_ROCK), this.x, this.y);
 
 }
 
