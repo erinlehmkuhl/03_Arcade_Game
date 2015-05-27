@@ -32,6 +32,17 @@ var drawBonus = false;
 var bonus = 0;
 
 //-------------------------------- ENEMIES-----------------------------------
+
+//make lots of bugs.
+var createBugs = function(howMany){
+    var i = 0;
+    while (i < howMany){
+        i++;
+        allEnemies.push(new Enemy());
+    }
+};
+
+
 var Enemy = function() {
     this.randEnemyStartLoc = Math.floor(Math.random()*370) + 1;//inital start spot bewteen 1-605
     this.x = this.randEnemyStartLoc;
@@ -136,7 +147,7 @@ Player.prototype.crashInto = function(){//called in collision()
     this.y = player.RESTART_Y;
 
     alert("waa waa");
-    livesCounter();
+    this.livesCounter();
     collide = false;
 }
 
@@ -192,7 +203,7 @@ Player.prototype.handleInput = function(buttonPress) {
             this.score();
             player.restart();
             gem.restart();
-            levelUp();
+            this.levelUp();
             gem.bonusSpeedChange();
         }
     }else if (buttonPress === "down"){
@@ -218,6 +229,43 @@ Player.prototype.score = function(){
     if (bonusPoint == true){
         drawBonus = true;
     }
+}
+
+
+Player.prototype.levelUp = function(){
+    //instructions for leveling up every third point
+    if (curScore % 3 === 0){
+        createBugs(1);
+        for(var i = 0; i < allEnemies.length; i++){
+            allEnemies[i].randomizeSpeed();
+        }
+        rock.moveRock();
+        levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
+        $("#level").find("span").text(levels.length);//write level in html
+    }
+}
+
+
+Player.prototype.livesCounter = function(){
+    if (collide = true){
+        lives = lives -1 ;
+        $("#lives").find("span").text(lives);//write the lives in html
+    }
+}
+
+
+// This listens for key presses and sends the keys to your
+// Player.handleInput() method. You don't need to modify this.
+Player.prototype.listener = function(){
+    document.addEventListener('keyup', function(e) {
+        var allowedKeys = {
+            37: 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down'
+        };
+        player.handleInput(allowedKeys[e.keyCode]);
+    });
 }
 
 //----------------------------------- ROCKS --------------------------------------
@@ -357,7 +405,7 @@ Gem.prototype.bonusSpeedChange = function(){// called in handleInput() for playe
 
 //-------------------------------- GAME PLAY STUFF-----------------------------------
 
-
+//used for player, enemy and gems
 var boundingBox = function(boxX, boxY, boxW, boxH){
     //make sure to use .call(this) when using this function in the update() function
     //boxX and boxY are the upper left coordinate of the object.
@@ -368,51 +416,6 @@ var boundingBox = function(boxX, boxY, boxW, boxH){
     this.boxW = boxW;
     this.boxH = boxH;
 };
-
-
-var levelUp = function(){
-    //instructions for leveling up every third point
-    if (curScore % 3 === 0){
-        createBugs(1);
-        for(var i = 0; i < allEnemies.length; i++){
-            allEnemies[i].randomizeSpeed();
-        }
-        rock.moveRock();
-        levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
-        $("#level").find("span").text(levels.length);//write level in html
-    }
-};
-
-
-var livesCounter = function(){
-    if (collide = true){
-        lives = lives -1 ;
-        $("#lives").find("span").text(lives);//write the lives in html
-    }
-};
-
-
-//make lots of bugs.
-var createBugs = function(howMany){
-    var i = 0;
-    while (i < howMany){
-        i++;
-        allEnemies.push(new Enemy());
-    }
-};
-
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
-    player.handleInput(allowedKeys[e.keyCode]);
-});
 
 
 //for debugging collisions. This shows the bounding box if placed in render()
@@ -431,6 +434,7 @@ for(var i = 0; i < allEnemies.length; i++){
 
 //instantiate player object
 var player = new Player();
+player.listener();
 
 //instantiate rock object
 var rock = new Rock();
