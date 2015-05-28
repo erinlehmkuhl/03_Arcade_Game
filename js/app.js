@@ -403,7 +403,7 @@ Gem.prototype.bonusSpeedChange = function(){// called in handleInput() for playe
     }
 }
 
-//-------------------------------- GAME PLAY STUFF-----------------------------------
+//-------------------------------- REUSED CODE -----------------------------------
 
 //used for player, enemy and gems
 var boundingBox = function(boxX, boxY, boxW, boxH){
