@@ -30,8 +30,8 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-    $("body").css("width", "100%");
-    $("canvas").css("width", "50%");
+    $('body').css('width', '100%');
+    $('canvas').css('width', '50%');
 
 
     /* This function serves as the kickoff point for the game loop itself
@@ -155,15 +155,15 @@ var Engine = (function(global) {
         if (levels.length > 9){ // set to 9 to end at 10
             //GAME OVER: end the game after 10 rounds
             player.render();
-            ctx.font="40px Arial";
-            ctx.textAlign= "center";
-            ctx.fillText("BEST IN THE WORLD!", canvas.width/2, canvas.height/2 - 30);
+            ctx.font='40px Arial';
+            ctx.textAlign= 'center';
+            ctx.fillText('BEST IN THE WORLD!', canvas.width/2, canvas.height/2 - 30);
             ctx.fillText(scoreList.length + bonus, canvas.width/2, canvas.height/2 + 30);
             gameOver = true;
         }else if (lives == 0){
-            ctx.font="80px Arial";
-            ctx.textAlign= "center";
-            ctx.fillText("GAME OVER!", canvas.width/2, canvas.height/2 - 30);
+            ctx.font='80px Arial';
+            ctx.textAlign= 'center';
+            ctx.fillText('GAME OVER!', canvas.width/2, canvas.height/2 - 30);
             gameOver = true;
                 
         }else{
@@ -207,18 +207,18 @@ var Engine = (function(global) {
 
 
     //add in score ticker under canvas
-    var container = "div id= 'column'></div>";
-    var scoreText = "<h2 id= 'score'> Score: <span> 0 </span></h2>";
-    var levelText = "<h3 id= 'level'> Level: <span> 1 </span></h3>";
-    var livesText = "<h3 id= 'lives'> Lives: <span> 3 </span></h3>";
+    var container = '<div id= "column"></div>';
+    var scoreText = '<h2 id= "score"> Score: <span> 0 </span></h2>';
+    var levelText = '<h3 id= "level"> Level: <span> 1 </span></h3>';
+    var livesText = '<h3 id= "lives"> Lives: <span> 3 </span></h3>';
 
-    $("body").append("<div id= 'mainDiv'></div>");
-    $("#mainDiv").append("<div class= 'column' id= 'levelCol'></div>");
-    $("#levelCol").append(levelText);
-    $("#mainDiv").append("<div class= 'column' id= 'scoreCol'></div>");
-    $("#scoreCol").append(scoreText);
-    $("#mainDiv").append("<div class= 'column' id= 'livesCol'></div>");
-    $("#livesCol").append(livesText);
+    $('body').append('<div id= "mainDiv"></div>');
+    $('#mainDiv').append('<div class= "column" id= "levelCol"></div>');
+    $('#levelCol').append(levelText);
+    $('#mainDiv').append('<div class= "column" id= "scoreCol"></div>');
+    $('#scoreCol').append(scoreText);
+    $('#mainDiv').append('<div class= "column" id= "livesCol"></div>');
+    $('#livesCol').append(livesText);
 
 
 

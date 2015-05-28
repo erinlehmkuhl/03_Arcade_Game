@@ -57,8 +57,8 @@ Enemy.prototype.randomizeSpeed = function(){
     speedList = [];
     for (enemy in allEnemies) {
         //make a this.speedRandom attribute for update() to use in this.x
-        allEnemies[enemy].speedRandom = Math.floor(Math.random() * 4000) + 1;
-        speedList.push(allEnemies[enemy].speedRandom);
+        this.speedRandom = Math.floor(Math.random() * 4000) + 1;
+        speedList.push(this.speedRandom);
     }
 }
 
@@ -146,7 +146,7 @@ Player.prototype.crashInto = function(){//called in collision()
     this.x = player.RESTART_X;
     this.y = player.RESTART_Y;
 
-    alert("waa waa");
+    alert('waa waa');
     this.livesCounter();
     collide = false;
 }
@@ -185,17 +185,17 @@ Player.prototype.render = function() {
 //move player based on key input
 //stops player when they run into a wall or rock
 Player.prototype.handleInput = function(buttonPress) {
-    if (buttonPress === "left"){
+    if (buttonPress === 'left'){
         this.x = this.x - ONE_BLOCK_HORZ;//move to the left normally
         if (this.x < LEFT_EDGE){//unless there is a wall
             this.x = LEFT_EDGE;
         }
-    }else if (buttonPress === "right"){
+    }else if (buttonPress === 'right'){
         this.x = this.x + ONE_BLOCK_HORZ;// move to the right normally
         if (this.x > RIGHT_EDGE){//unless there is a wall
             this.x = RIGHT_EDGE;
         }
-    }else if (buttonPress === "up"){
+    }else if (buttonPress === 'up'){
         if (!(player.y == rock.rockY + ONE_BLOCK_VERT && player.x == rock.rockX)){//if rock in the way vertically
             this.y = this.y - ONE_BLOCK_VERT;// move up normally
         }
@@ -206,7 +206,7 @@ Player.prototype.handleInput = function(buttonPress) {
             this.levelUp();
             gem.bonusSpeedChange();
         }
-    }else if (buttonPress === "down"){
+    }else if (buttonPress === 'down'){
         this.y = this.y + ONE_BLOCK_VERT;
         if (this.y > BOTTOM_EDGE){
           this.y = BOTTOM_EDGE;
@@ -225,7 +225,7 @@ Player.prototype.restart = function(){//reset player's position
 Player.prototype.score = function(){
     scoreList.push(1);// add one to the score depot
     curScore = scoreList.length;
-    $("#score").find("span").text(curScore + bonus);//write the score in html
+    $('#score').find('span').text(curScore + bonus);//write the score in html
     if (bonusPoint == true){
         drawBonus = true;
     }
@@ -241,7 +241,7 @@ Player.prototype.levelUp = function(){
         }
         rock.moveRock();
         levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
-        $("#level").find("span").text(levels.length);//write level in html
+        $('#level').find('span').text(levels.length);//write level in html
     }
 }
 
@@ -249,7 +249,7 @@ Player.prototype.levelUp = function(){
 Player.prototype.livesCounter = function(){
     if (collide = true){
         lives = lives -1 ;
-        $("#lives").find("span").text(lives);//write the lives in html
+        $('#lives').find('spans').text(lives);//write the lives in html
     }
 }
 
@@ -333,9 +333,9 @@ Gem.prototype.pickup = function(){//gets called in player.update()
 
 Gem.prototype.render = function() {//game board gems get drawn here
     if (drawBonus == true && gemList.length % 4 == 0){//BONUS gets drawn on the board %4 instead of %3 to account for draw time
-        ctx.font="60px Arial";
-        ctx.textAlign= "center";
-        ctx.fillText("BONUS", canvas.width/2, canvas.height/2);
+        ctx.font='60px Arial';
+        ctx.textAlign= 'center';
+        ctx.fillText('BONUS', canvas.width/2, canvas.height/2);
         if (player.y != player.RESTART_Y || player.x != player.RESTART_X){//as soon as char moves, clear the word BONUS
             ctx.clearRect(0, 0, canvasGems.width, canvasGems.height);
             bonusPoint = false;
@@ -397,9 +397,9 @@ Gem.prototype.bonusSpeedChange = function(){// called in handleInput() for playe
         //clear gems from lower award area
         gemList = [];
         ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height)
-        ctxGems.font="20px Arial";
-        ctxGems.textAlign= "center";
-        ctxGems.fillText("Fill Your Gem Pouch to Slow the Bugs", canvasGems.width/2, canvasGems.height/2);
+        ctxGems.font='20px Arial';
+        ctxGems.textAlign= 'center';
+        ctxGems.fillText('Fill Your Gem Pouch to Slow the Bugs', canvasGems.width/2, canvasGems.height/2);
     }
 }
 
