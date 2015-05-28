@@ -52,58 +52,57 @@ var Enemy = function() {
 };
 
 
-//create variable speeds for the bugs per round
-Enemy.prototype.randomizeSpeed = function(){
-    speedList = [];
-    for (enemy in allEnemies) {
-        //make a this.speedRandom attribute for update() to use in this.x
-        this.speedRandom = Math.floor(Math.random() * 4000) + 1;
-        speedList.push(this.speedRandom);
+Enemy.prototype = {
+    constructor: Enemy,
+
+    //create variable speeds for the bugs per round
+    randomizeSpeed: function(){
+        speedList = [];
+        for (enemy in allEnemies) {
+            //make a this.speedRandom attribute for update() to use in this.x
+            this.speedRandom = Math.floor(Math.random() * 4000) + 1;
+            speedList.push(this.speedRandom);
+        }
+    },
+
+
+    // Update the enemy's position
+    update: function(dt) {
+        //if a row is already filled with a bug, set speed to first bug's speed
+        var speedPerRow = speedList[this.whichRow];//the first bug sets the row's speed
+        var curLevel = levels.length;
+        if (occupiedRows[this.whichRow]) {
+            this.x = (this.x + ((ENEMY_SPEED * speedPerRow)*dt) + curLevel - bonusSpeed);
+        }else{//set initial speed
+            this.x = (this.x + ((ENEMY_SPEED * this.speedRandom)*dt) + curLevel - bonusSpeed);
+        }
+        //randomize re-entry time
+        this.randomLag = Math.random()*10000;
+        if (this.x > 505 + this.randomLag){
+            this.x = this.restartRun;
+        }
+        //bounding box information
+        boundingBox.call(this, 15, 80, 70, 60);
+    },
+
+
+    //assign each enemy a y coordinate, gets run upon creation of the instance
+    assignedRow: function(){
+        var FIRST_ROW = 228;
+        var rows = [FIRST_ROW, 
+                    FIRST_ROW-ONE_BLOCK_VERT, 
+                    FIRST_ROW-(ONE_BLOCK_VERT * 2)];
+        this.whichRow = allEnemies.length % 3; // so they only occupy three rows
+        this.y = rows[this.whichRow];// rows are assigned 0, 1 & 2
+        occupiedRows.push(this.y);//assign same speed per row in update().
+        return this.y;
+    },
+
+
+    //draw enemies on board each frame
+    render: function() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
-}
-
-
-// Update the enemy's position
-Enemy.prototype.update = function(dt) {
-    //if a row is already filled with a bug, set speed to first bug's speed
-    var speedPerRow = speedList[this.whichRow];//the first bug sets the row's speed
-    var curLevel = levels.length;
-
-
-    if (occupiedRows[this.whichRow]) {
-        this.x = (this.x + ((ENEMY_SPEED * speedPerRow)*dt) + curLevel - bonusSpeed);
-    }else{//set initial speed
-        this.x = (this.x + ((ENEMY_SPEED * this.speedRandom)*dt) + curLevel - bonusSpeed);
-    }
-
-    //randomize re-entry time
-    this.randomLag = Math.random()*10000;
-    if (this.x > 505 + this.randomLag){
-        this.x = this.restartRun;
-    }
-
-    //bounding box information
-    boundingBox.call(this, 15, 80, 70, 60);
-}
-
-
-//assign each enemy a y coordinate, gets run upon creation of the instance
-Enemy.prototype.assignedRow = function(){
-    var FIRST_ROW = 228;
-    var rows = [FIRST_ROW, 
-                FIRST_ROW-ONE_BLOCK_VERT, 
-                FIRST_ROW-(ONE_BLOCK_VERT * 2)];
-    this.whichRow = allEnemies.length % 3; // so they only occupy three rows
-    this.y = rows[this.whichRow];// rows are assigned 0, 1 & 2
-    occupiedRows.push(this.y);//assign same speed per row in update().
-
-    return this.y;
-}
-
-
-//draw enemies on board each frame
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
 //-------------------------------- PLAYER-----------------------------------
@@ -116,157 +115,162 @@ var Player = function() {
     this.y = this.RESTART_Y;
 };
 
-
-Player.prototype.collision = function(enemy){// called once for enemies and once for gems
-    //this if statement is courtesy of https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
-    if (enemy.boxX < this.boxX + this.boxW &&
-        enemy.boxX + enemy.boxW > this.boxX &&
-        enemy.boxY < this.boxY + this.boxH &&
-        enemy.boxH + enemy.boxY > this.boxY) {
-        //collision detected!
-        collide = true;
-
-        if (enemy.constructor == Enemy){
-            this.crashInto();
-        }
-    }
-}
-
-
-Player.prototype.crashInto = function(){//called in collision()
-    //clear gems from award list in lower canvas
-    gemList = [];
-    ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
-    bonus = 0;
-    //clear gems from possession
-    if (gem.gotIt == true){
-        gem.gotIt = false;
-    }
-    //restart player position
-    this.x = player.RESTART_X;
-    this.y = player.RESTART_Y;
-
-    alert('waa waa');
-    this.livesCounter();
-    collide = false;
-}
-
-
-//update things associated with player
-Player.prototype.update = function() {
-    //bounding box information
-    boundingBox.call(this, 14, 63, 72, 75);
+Player.prototype = {
+    constructor: Enemy,
     
-    //run collision function
-    for (var i = 0; i < allEnemies.length; i++){
-        this.collision(allEnemies[i]);
-    }
-}
+    collision: function(enemy){// called once for enemies and once for gems
+        //this if statement is courtesy of https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+        if (enemy.boxX < this.boxX + this.boxW &&
+            enemy.boxX + enemy.boxW > this.boxX &&
+            enemy.boxY < this.boxY + this.boxH &&
+            enemy.boxH + enemy.boxY > this.boxY) {
+            //collision detected!
+            collide = true;
 
-
-//draw player on screen
-Player.prototype.render = function() {
-    //draw character
-    if (gameOver == false){
-       ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }else{
-        ctx.drawImage(Resources.get(this.PRINCESS_SPRITE), this.x, this.y);
-    }
-
-    //draw stars representing each level
-    var nextStar = 0;
-    for (level in levels){
-        ctx.drawImage(Resources.get(SPRITE_STAR_LEVEL), 0 + nextStar, 415);
-        nextStar = nextStar + ONE_BLOCK_HORZ/2;
-    }
-}
-
-
-//move player based on key input
-//stops player when they run into a wall or rock
-Player.prototype.handleInput = function(buttonPress) {
-    if (buttonPress === 'left'){
-        this.x = this.x - ONE_BLOCK_HORZ;//move to the left normally
-        if (this.x < LEFT_EDGE){//unless there is a wall
-            this.x = LEFT_EDGE;
+            if (enemy.constructor == Enemy){
+                this.crashInto();
+            }
         }
-    }else if (buttonPress === 'right'){
-        this.x = this.x + ONE_BLOCK_HORZ;// move to the right normally
-        if (this.x > RIGHT_EDGE){//unless there is a wall
-            this.x = RIGHT_EDGE;
+    },
+
+
+    crashInto: function(){//called in collision()
+        //clear gems from award list in lower canvas
+        gemList = [];
+        ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
+        bonus = 0;
+        //clear gems from possession
+        if (gem.gotIt == true){
+            gem.gotIt = false;
         }
-    }else if (buttonPress === 'up'){
-        if (!(player.y == rock.rockY + ONE_BLOCK_VERT && player.x == rock.rockX)){//if rock in the way vertically
-            this.y = this.y - ONE_BLOCK_VERT;// move up normally
+        //restart player position
+        this.x = player.RESTART_X;
+        this.y = player.RESTART_Y;
+
+        alert('waa waa');
+        this.livesCounter();
+        collide = false;
+    },
+
+
+    //update things associated with player
+    update: function() {
+        //bounding box information
+        boundingBox.call(this, 14, 63, 72, 75);
+        
+        //run collision function
+        for (var i = 0; i < allEnemies.length; i++){
+            this.collision(allEnemies[i]);
         }
-        if (this.y < TOP_EDGE){// points, gems and levels accrued here
-            this.score();
-            player.restart();
-            gem.restart();
-            this.levelUp();
-            gem.bonusSpeedChange();
+    },
+
+
+        //draw player on screen
+    render: function() {
+        //draw character
+        if (gameOver == false){
+           ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }else{
+            ctx.drawImage(Resources.get(this.PRINCESS_SPRITE), this.x, this.y);
         }
-    }else if (buttonPress === 'down'){
-        this.y = this.y + ONE_BLOCK_VERT;
-        if (this.y > BOTTOM_EDGE){
-          this.y = BOTTOM_EDGE;
+
+        //draw stars representing each level
+        var nextStar = 0;
+        for (level in levels){
+            ctx.drawImage(Resources.get(SPRITE_STAR_LEVEL), 0 + nextStar, 415);
+            nextStar = nextStar + ONE_BLOCK_HORZ/2;
         }
+    },
+
+
+    //move player based on key input
+    //stops player when they run into a wall or rock
+    handleInput: function(buttonPress) {
+        if (buttonPress === 'left'){
+            this.x = this.x - ONE_BLOCK_HORZ;//move to the left normally
+            if (this.x < LEFT_EDGE){//unless there is a wall
+                this.x = LEFT_EDGE;
+            }
+        }else if (buttonPress === 'right'){
+            this.x = this.x + ONE_BLOCK_HORZ;// move to the right normally
+            if (this.x > RIGHT_EDGE){//unless there is a wall
+                this.x = RIGHT_EDGE;
+            }
+        }else if (buttonPress === 'up'){
+            if (!(player.y == rock.rockY + ONE_BLOCK_VERT && player.x == rock.rockX)){//if rock in the way vertically
+                this.y = this.y - ONE_BLOCK_VERT;// move up normally
+            }
+            if (this.y < TOP_EDGE){// points, gems and levels accrued here
+                this.score();
+                player.restart();
+                gem.restart();
+                this.levelUp();
+                gem.bonusSpeedChange();
+            }
+        }else if (buttonPress === 'down'){
+            this.y = this.y + ONE_BLOCK_VERT;
+            if (this.y > BOTTOM_EDGE){
+              this.y = BOTTOM_EDGE;
+            }
+        }
+    },
+
+
+    restart: function(){//reset player's position
+        player.y = player.RESTART_Y; 
+        player.x = player.RESTART_X;
+    },
+
+
+        //This is called when the player gets to the top of the screen in handleInput()
+    score: function(){
+        scoreList.push(1);// add one to the score depot
+        curScore = scoreList.length;
+        $('#score').find('span').text(curScore + bonus);//write the score in html
+        if (bonusPoint == true){
+            drawBonus = true;
+        }
+    },
+
+
+    levelUp: function(){
+        //instructions for leveling up every third point
+        if (curScore % 3 === 0){
+            createBugs(1);
+            for(var i = 0; i < allEnemies.length; i++){
+                allEnemies[i].randomizeSpeed();
+            }
+            rock.moveRock();
+            levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
+            $('#level').find('span').text(levels.length);//write level in html
+        }
+    },
+
+
+    livesCounter: function(){
+        console.log(collide);
+        console.log(lives);
+        if (collide = true){
+            lives = lives -1 ;
+            $('#lives').find('span').text(lives);//write the lives in html
+        }
+    },
+
+
+    // This listens for key presses and sends the keys to your
+    // Player.handleInput() method. You don't need to modify this.
+    listener: function(){
+        document.addEventListener('keyup', function(e) {
+            var allowedKeys = {
+                37: 'left',
+                38: 'up',
+                39: 'right',
+                40: 'down'
+            };
+            player.handleInput(allowedKeys[e.keyCode]);
+        });
     }
-}
-
-
-Player.prototype.restart = function(){//reset player's position
-    player.y = player.RESTART_Y; 
-    player.x = player.RESTART_X;
-}
-
-
-//This is called when the player gets to the top of the screen in handleInput()
-Player.prototype.score = function(){
-    scoreList.push(1);// add one to the score depot
-    curScore = scoreList.length;
-    $('#score').find('span').text(curScore + bonus);//write the score in html
-    if (bonusPoint == true){
-        drawBonus = true;
-    }
-}
-
-
-Player.prototype.levelUp = function(){
-    //instructions for leveling up every third point
-    if (curScore % 3 === 0){
-        createBugs(1);
-        for(var i = 0; i < allEnemies.length; i++){
-            allEnemies[i].randomizeSpeed();
-        }
-        rock.moveRock();
-        levels.push(scoreList[-1]);//add one to the levels list, which also adds speed
-        $('#level').find('span').text(levels.length);//write level in html
-    }
-}
-
-
-Player.prototype.livesCounter = function(){
-    if (collide = true){
-        lives = lives -1 ;
-        $('#lives').find('spans').text(lives);//write the lives in html
-    }
-}
-
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-Player.prototype.listener = function(){
-    document.addEventListener('keyup', function(e) {
-        var allowedKeys = {
-            37: 'left',
-            38: 'up',
-            39: 'right',
-            40: 'down'
-        };
-        player.handleInput(allowedKeys[e.keyCode]);
-    });
-}
+};
 
 //----------------------------------- ROCKS --------------------------------------
 var WATER_SLOTS = [0, ONE_BLOCK_HORZ, ONE_BLOCK_HORZ*2, ONE_BLOCK_HORZ*3, ONE_BLOCK_HORZ*4];//slots for rocks
