@@ -115,8 +115,9 @@ var Player = function() {
     this.y = this.RESTART_Y;
 };
 
+
 Player.prototype = {
-    constructor: Enemy,
+    constructor: Player,
     
     collision: function(enemy){// called once for enemies and once for gems
         //this if statement is courtesy of https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
@@ -165,7 +166,7 @@ Player.prototype = {
     },
 
 
-        //draw player on screen
+    //draw player on screen
     render: function() {
         //draw character
         if (gameOver == false){
@@ -281,20 +282,22 @@ var Rock = function(){
 };
 
 
-Rock.prototype.moveRock = function(){
-    this.x = WATER_SLOTS[parseInt(Math.random()*5)];
+Rock.prototype = {
+    constructor: Rock,
 
-    var alignmentY = 11;//the pngs are a little messy - these are for collisions
-    var alignmentX = 5;//the pngs are a little messy - these are for collisions
-    this.rockX = this.x + alignmentX;//the pngs are a little messy - these are for collisions
-    this.rockY = this.y + alignmentY;//the pngs are a little messy - these are for collisions
-}
+    moveRock: function(){
+        this.x = WATER_SLOTS[parseInt(Math.random()*5)];
+        var alignmentY = 11;//the pngs are a little messy - these are for collisions
+        var alignmentX = 5;//the pngs are a little messy - these are for collisions
+        this.rockX = this.x + alignmentX;//the pngs are a little messy - these are for collisions
+        this.rockY = this.y + alignmentY;//the pngs are a little messy - these are for collisions
+    },
 
 
-Rock.prototype.render = function(){
-    ctx.drawImage(Resources.get(SPRITE_ROCK), this.x, this.y);
-
-}
+    render: function(){
+        ctx.drawImage(Resources.get(SPRITE_ROCK), this.x, this.y);
+    }
+};
 
 //----------------------------------- On Board GEMS --------------------------------------
 
@@ -303,107 +306,110 @@ var Gem = function(){
 };
 
 
-Gem.prototype.random = function(){
-    //gets run upon instantiation and in player.handleInput() each time player scores
-    var num = (parseInt(Math.random() * 3));
-    this.sprite = GEM_SPRITE_LIST[num];
-    var rows = [ONE_BLOCK_VERT, ONE_BLOCK_VERT*2, ONE_BLOCK_VERT*3, ONE_BLOCK_VERT*4];
-    var columns = [0, ONE_BLOCK_HORZ, ONE_BLOCK_HORZ*2, ONE_BLOCK_HORZ*3, ONE_BLOCK_HORZ*4];
-    var randRow = parseInt(Math.random()*4);
-    var randCol = parseInt(Math.random()*5);
-    this.row = rows[randRow];
-    this.column = columns[randCol];
-    this.x = this.column;
-    this.y = this.row;
-}
+Gem.prototype = {
+    constructor: Gem,
+    random: function(){
+        //gets run upon instantiation and in player.handleInput() each time player scores
+        var num = (parseInt(Math.random() * 3));
+        this.sprite = GEM_SPRITE_LIST[num];
+        var rows = [ONE_BLOCK_VERT, ONE_BLOCK_VERT*2, ONE_BLOCK_VERT*3, ONE_BLOCK_VERT*4];
+        var columns = [0, ONE_BLOCK_HORZ, ONE_BLOCK_HORZ*2, ONE_BLOCK_HORZ*3, ONE_BLOCK_HORZ*4];
+        var randRow = parseInt(Math.random()*4);
+        var randCol = parseInt(Math.random()*5);
+        this.row = rows[randRow];
+        this.column = columns[randCol];
+        this.x = this.column;
+        this.y = this.row;
+    },
 
 
-Gem.prototype.update = function(){
-    boundingBox.call(this, 20, 53, GEM_SIZE, 65);
-    player.collision(gem);
-    gem.pickup();
-}
+    update: function(){
+        boundingBox.call(this, 20, 53, GEM_SIZE, 65);
+        player.collision(gem);
+        gem.pickup();
+    },
 
 
-Gem.prototype.pickup = function(){//gets called in player.update()
-    //make gems disappear
-    if (collide == true){
-        drawGem = false;//don't draw the gem on the board anymore -- it get's 'picked up'
-        this.gotIt = true;//gem in player's possession
-        collide = false;
-    }
-}
-
-
-Gem.prototype.render = function() {//game board gems get drawn here
-    if (drawBonus == true && gemList.length % 4 == 0){//BONUS gets drawn on the board %4 instead of %3 to account for draw time
-        ctx.font='60px Arial';
-        ctx.textAlign= 'center';
-        ctx.fillText('BONUS', canvas.width/2, canvas.height/2);
-        if (player.y != player.RESTART_Y || player.x != player.RESTART_X){//as soon as char moves, clear the word BONUS
-            ctx.clearRect(0, 0, canvasGems.width, canvasGems.height);
-            bonusPoint = false;
-            drawBonus = false;
+    pickup: function(){//gets called in player.update()
+        //make gems disappear
+        if (collide == true){
+            drawGem = false;//don't draw the gem on the board anymore -- it get's 'picked up'
+            this.gotIt = true;//gem in player's possession
+            collide = false;
         }
-    }
-    if (drawGem == true){// draw the gem on the game board
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
-}
+    },
 
 
-Gem.prototype.restart = function(){//gets run in player.handleInput()
-    this.awardGem();
-    this.awardBonusPoints();
-    this.random();
-    drawGem = true;
-}
+    render: function() {//game board gems get drawn here
+        if (drawBonus == true && gemList.length % 4 == 0){//BONUS gets drawn on the board %4 instead of %3 to account for draw time
+            ctx.font='60px Arial';
+            ctx.textAlign= 'center';
+            ctx.fillText('BONUS', canvas.width/2, canvas.height/2);
+            if (player.y != player.RESTART_Y || player.x != player.RESTART_X){//as soon as char moves, clear the word BONUS
+                ctx.clearRect(0, 0, canvasGems.width, canvasGems.height);
+                bonusPoint = false;
+                drawBonus = false;
+            }
+        }
+        if (drawGem == true){// draw the gem on the game board
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }
+    },
+
+
+    restart: function(){//gets run in player.handleInput()
+        this.awardGem();
+        this.awardBonusPoints();
+        this.random();
+        drawGem = true;
+    },
 
 //------------------------------ Prizes in Second Canvas --------------------------------------
 
-Gem.prototype.awardGem = function(){//called in gem.restart(). adds gem to list, will immediately be drawn in render()
-    if (gem.gotIt == true && player.y == player.RESTART_Y){
-        if (gemList.length <= 0){
-            ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);//clears "Gem Pouch" message if first gem in list
-            gemList.push(this.sprite);//add one to gemList
-            gem.gotIt = false;
-        }else{
-            gemList.push(this.sprite);//add one to gemList
-            gem.gotIt = false;
+    awardGem: function(){//called in gem.restart(). adds gem to list, will immediately be drawn in render()
+        if (gem.gotIt == true && player.y == player.RESTART_Y){
+            if (gemList.length <= 0){
+                ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);//clears "Gem Pouch" message if first gem in list
+                gemList.push(this.sprite);//add one to gemList
+                gem.gotIt = false;
+            }else{
+                gemList.push(this.sprite);//add one to gemList
+                gem.gotIt = false;
+            }
         }
-    }
-}
+    },
 
 
-Gem.prototype.renderBar = function(){//awarded gems get drawn in lower canvas as they are placed in gemList
-    var nextGem = 0;
-        for (i in gemList){
-                ctxGems.drawImage(Resources.get(gemList[i]), (-22 + nextGem), -55);//
-                nextGem = nextGem + GEM_SIZE;
-    }
-}
+    renderBar: function(){//awarded gems get drawn in lower canvas as they are placed in gemList
+        var nextGem = 0;
+            for (i in gemList){
+                    ctxGems.drawImage(Resources.get(gemList[i]), (-22 + nextGem), -55);//
+                    nextGem = nextGem + GEM_SIZE;
+        }
+    },
 
 
-Gem.prototype.awardBonusPoints = function(){//gets run in gem.restart()
-    //needs gemList to be run first. that happens in awardGem()
-    //next time player.score() is run, award points from this function will be included
-    if (gemList.length > 0 && gemList.length % 3 == 0){
-        bonus = bonus + 23;
-        bonusPoint = true;//to write the word BONUS on screen 
-    }
-}
+    awardBonusPoints: function(){//gets run in gem.restart()
+        //needs gemList to be run first. that happens in awardGem()
+        //next time player.score() is run, award points from this function will be included
+        if (gemList.length > 0 && gemList.length % 3 == 0){
+            bonus = bonus + 23;
+            bonusPoint = true;//to write the word BONUS on screen 
+        }
+    },
 
 
-Gem.prototype.bonusSpeedChange = function(){// called in handleInput() for player
-    if (gemList.length == 9){
-        //bonus points awarded for obtaining 9 gems - slows game by one level
-        bonusSpeed = 2;
-        //clear gems from lower award area
-        gemList = [];
-        ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height)
-        ctxGems.font='20px Arial';
-        ctxGems.textAlign= 'center';
-        ctxGems.fillText('Fill Your Gem Pouch to Slow the Bugs', canvasGems.width/2, canvasGems.height/2);
+    bonusSpeedChange: function(){// called in handleInput() for player
+        if (gemList.length == 9){
+            //bonus points awarded for obtaining 9 gems - slows game by one level
+            bonusSpeed = 2;
+            //clear gems from lower award area
+            gemList = [];
+            ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height)
+            ctxGems.font='20px Arial';
+            ctxGems.textAlign= 'center';
+            ctxGems.fillText('Fill Your Gem Pouch to Slow the Bugs', canvasGems.width/2, canvasGems.height/2);
+        }
     }
 }
 
