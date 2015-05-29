@@ -26,7 +26,7 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-    
+
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
@@ -102,7 +102,7 @@ var Engine = (function(global) {
         gem.update();
         player.update();
     }
-    
+
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -165,7 +165,7 @@ var Engine = (function(global) {
             ctx.textAlign= 'center';
             ctx.fillText('GAME OVER!', canvas.width/2, canvas.height/2 - 30);
             gameOver = true;
-                
+
         }else{
             gem.render();
 
@@ -226,7 +226,7 @@ var Engine = (function(global) {
     var canvasGems = document.createElement('canvas');
     var ctxGems = canvasGems.getContext('2d');
 
-    
+
     canvasGems.width = 505;
     canvasGems.height = 62;
     canvasGems.id = 'canvasGems';

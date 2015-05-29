@@ -7,7 +7,7 @@ var RIGHT_EDGE = 405;
 var TOP_EDGE = 73;
 var BOTTOM_EDGE = 409;
 
-var levels = [1];
+var levels = [1]; //starting level
 var SPRITE_STAR_LEVEL = 'images/StarSmall.png';
 var SPRITE_ROCK = 'images/Rock.png';
 var scoreList = [];
@@ -16,7 +16,7 @@ var collide = false;
 
 var occupiedRows = [];//to place bugs
 var allEnemies = [];//used in engine.js & to assign placement in rows
-var ENEMY_SPEED = 0.05;
+var ENEMY_SPEED = 0.05;//initial base speed
 var speedList = [];//for bugs so they don't overrun themselves
 var gameOver = false;
 
@@ -46,12 +46,13 @@ var createBugs = function(howMany){
 
 
 var Enemy = function() {
+    //set x
     this.randEnemyStartLoc = Math.floor(Math.random()*370) + 1;
-    //inital start spot bewteen 1-605
     this.x = this.randEnemyStartLoc;
-    this.sprite = 'images/enemy-bug.png';
     this.restartRun = -100;
+
     this.y = this.assignedRow();
+    this.sprite = 'images/enemy-bug.png';
 };
 
 
