@@ -147,12 +147,12 @@ Player.prototype = {
         ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
         bonus = 0;
         //clear gems from possession
-        if (gem.gotIt == true){
+        if (gem.gotIt === true){
             gem.gotIt = false;
         }
         //restart player position
-        this.x = player.RESTART_X;
-        this.y = player.RESTART_Y;
+        this.x = this.RESTART_X;
+        this.y = this.RESTART_Y;
 
         alert('waa waa');
         this.livesCounter();
@@ -175,7 +175,7 @@ Player.prototype = {
     //draw player on screen
     render: function() {
         //draw character
-        if (gameOver == false){
+        if (gameOver === false){
            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }else{
             ctx.drawImage(Resources.get(this.PRINCESS_SPRITE), this.x, this.y);
@@ -204,13 +204,13 @@ Player.prototype = {
                 this.x = RIGHT_EDGE;
             }
         }else if (buttonPress === 'up'){
-            if (!(player.y == rock.rockY + ONE_BLOCK_VERT && player.x == rock.rockX)){
+            if (!(this.y == rock.rockY + ONE_BLOCK_VERT && this.x == rock.rockX)){
             //if rock in the way vertically
                 this.y = this.y - ONE_BLOCK_VERT;// move up normally
             }
             if (this.y < TOP_EDGE){// points, gems and levels accrued here
                 this.score();
-                player.restart();
+                this.restart();
                 gem.restart();
                 this.levelUp();
                 gem.bonusSpeedChange();
@@ -225,8 +225,8 @@ Player.prototype = {
 
 
     restart: function(){//reset player's position
-        player.y = player.RESTART_Y;
-        player.x = player.RESTART_X;
+        this.y = this.RESTART_Y;
+        this.x = this.RESTART_X;
     },
 
 
@@ -235,7 +235,7 @@ Player.prototype = {
         scoreList.push(1);// add one to the score depot
         curScore = scoreList.length;
         $('#score').find('span').text(curScore + bonus);//write the score in html
-        if (bonusPoint == true){
+        if (bonusPoint === true){
             drawBonus = true;
         }
     },
@@ -256,9 +256,7 @@ Player.prototype = {
 
 
     livesCounter: function(){
-        console.log(collide);
-        console.log(lives);
-        if (collide = true){
+        if (collide === true){
             lives = lives -1 ;
             $('#lives').find('span').text(lives);//write the lives in html
         }
@@ -345,13 +343,13 @@ Gem.prototype = {
     update: function(){
         boundingBox.call(this, 20, 53, GEM_SIZE, 65);
         player.collision(gem);
-        gem.pickup();
+        this.pickup();
     },
 
 
     pickup: function(){//gets called in player.update()
         //make gems disappear
-        if (collide == true){
+        if (collide === true){
             drawGem = false;//don't draw the gem on the board- it get's 'picked up'
             this.gotIt = true;//gem in player's possession
             collide = false;
@@ -360,7 +358,7 @@ Gem.prototype = {
 
 
     render: function() {//game board gems get drawn here
-        if (drawBonus == true && gemList.length % 4 == 0){
+        if (drawBonus === true && gemList.length % 4 == 0){
         //BONUS gets drawn on the board %4 instead of %3 to account for draw time
             ctx.font='60px Arial';
             ctx.textAlign= 'center';
@@ -372,7 +370,7 @@ Gem.prototype = {
                 drawBonus = false;
             }
         }
-        if (drawGem == true){// draw the gem on the game board
+        if (drawGem === true){// draw the gem on the game board
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
     },
@@ -390,15 +388,15 @@ Gem.prototype = {
     awardGem: function(){
     //called in gem.restart(). adds gem to list,
     //will immediately be drawn in render()
-        if (gem.gotIt == true && player.y == player.RESTART_Y){
+        if (this.gotIt === true && player.y == player.RESTART_Y){
             if (gemList.length <= 0){
                 ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
                 //clears "Gem Pouch" message if first gem in list
                 gemList.push(this.sprite);//add one to gemList
-                gem.gotIt = false;
+                this.gotIt = false;
             }else{
                 gemList.push(this.sprite);//add one to gemList
-                gem.gotIt = false;
+                this.gotIt = false;
             }
         }
     },
