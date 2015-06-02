@@ -35,19 +35,9 @@ var bonus = 0;
 
 //------ENEMIES------
 
-//make lots of bugs.
-var createBugs = function(howMany){
-    var i = 0;
-    while (i < howMany){
-        i++;
-        allEnemies.push(new Enemy());
-    }
-};
-
-
 var Enemy = function() {
     //set x
-    this.randEnemyStartLoc = Math.floor(Math.random()*370) + 1;
+    this.randEnemyStartLoc = Math.floor(Math.random() * 370) + 1;
     this.x = this.randEnemyStartLoc;
     this.restartRun = -100;
 
@@ -60,9 +50,9 @@ Enemy.prototype = {
     constructor: Enemy,
 
     //create variable speeds for the bugs per round
-    randomizeSpeed: function(){
+    randomizeSpeed: function() {
         speedList = [];
-        for (enemy in allEnemies) {
+        for (var i = 0; i < allEnemies.length; i++){
             //make a this.speedRandom attribute for update() to use in this.x
             this.speedRandom = Math.floor(Math.random() * 4000) + 1;
             speedList.push(this.speedRandom);
@@ -145,7 +135,9 @@ Player.prototype = {
         //clear gems from award list in lower canvas
         gemList = [];
         ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
-        bonus = 0;
+        //clear bonus points from char 
+        bonusPoint = false;
+        drawBonus = false;
         //clear gems from possession
         if (gem.gotIt === true){
             gem.gotIt = false;
@@ -209,11 +201,11 @@ Player.prototype = {
                 this.y = this.y - ONE_BLOCK_VERT;// move up normally
             }
             if (this.y < TOP_EDGE){// points, gems and levels accrued here
-                this.score();
                 this.restart();
                 gem.restart();
-                this.levelUp();
                 gem.bonusSpeedChange();
+                this.score();
+                this.levelUp();
             }
         }else if (buttonPress === 'down'){
             this.y = this.y + ONE_BLOCK_VERT;
@@ -232,6 +224,7 @@ Player.prototype = {
 
         //This is called when the player gets to the top of the screen in handleInput()
     score: function(){
+        console.log(gemList);
         scoreList.push(1);// add one to the score depot
         curScore = scoreList.length;
         $('#score').find('span').text(curScore + bonus);//write the score in html
@@ -328,11 +321,11 @@ Gem.prototype = {
             ONE_BLOCK_VERT*4];
         var columns = [0,
             ONE_BLOCK_HORZ,
-            ONE_BLOCK_HORZ*2,
-            ONE_BLOCK_HORZ*3,
-            ONE_BLOCK_HORZ*4];
-        var randRow = parseInt(Math.random()*4);
-        var randCol = parseInt(Math.random()*5);
+            ONE_BLOCK_HORZ * 2,
+            ONE_BLOCK_HORZ * 3,
+            ONE_BLOCK_HORZ * 4];
+        var randRow = parseInt(Math.random() * 4);
+        var randCol = parseInt(Math.random() * 5);
         this.row = rows[randRow];
         this.column = columns[randCol];
         this.x = this.column;
@@ -358,8 +351,7 @@ Gem.prototype = {
 
 
     render: function() {//game board gems get drawn here
-        if (drawBonus === true && gemList.length % 4 == 0){
-        //BONUS gets drawn on the board %4 instead of %3 to account for draw time
+        if (drawBonus === true){
             ctx.font='60px Arial';
             ctx.textAlign= 'center';
             ctx.fillText('BONUS', canvas.width/2, canvas.height/2);
@@ -415,7 +407,7 @@ Gem.prototype = {
     awardBonusPoints: function(){//gets run in gem.restart()
         //needs gemList to be run first. that happens in awardGem()
         //next time player.score() is run, award points from this function will be included
-        if (gemList.length > 0 && gemList.length % 3 == 0){
+        if (gemList.length > 0 && gemList.length % 3 == 0 && collide === false){
             bonus = bonus + 23;
             bonusPoint = true;//to write the word BONUS on screen
         }
@@ -458,6 +450,15 @@ var showBoundingBox = function(){
 };
 
 //------START IT UP------
+
+//make lots of bugs.
+var createBugs = function(howMany) {
+    var i = 0;
+    while (i < howMany) {
+        i++;
+        allEnemies.push(new Enemy());
+    }
+};
 
 //instantiate enemy objects
 createBugs(1);
