@@ -175,7 +175,7 @@ Player.prototype = {
 
         //draw stars representing each level
         var nextStar = 0;
-        for (level in levels){
+        for (var level in levels){
             ctx.drawImage(Resources.get(SPRITE_STAR_LEVEL), 0 + nextStar, 415);
             nextStar = nextStar + ONE_BLOCK_HORZ/2;
         }
@@ -224,7 +224,6 @@ Player.prototype = {
 
         //This is called when the player gets to the top of the screen in handleInput()
     score: function(){
-        console.log(gemList);
         scoreList.push(1);// add one to the score depot
         curScore = scoreList.length;
         $('#score').find('span').text(curScore + bonus);//write the score in html
@@ -397,7 +396,7 @@ Gem.prototype = {
     renderBar: function(){
     //awarded gems get drawn in lower canvas as they are placed in gemList
         var nextGem = 0;
-            for (i in gemList){
+            for (var i in gemList){
                     ctxGems.drawImage(Resources.get(gemList[i]), (-22 + nextGem), -55);//
                     nextGem = nextGem + GEM_SIZE;
         }
@@ -407,7 +406,7 @@ Gem.prototype = {
     awardBonusPoints: function(){//gets run in gem.restart()
         //needs gemList to be run first. that happens in awardGem()
         //next time player.score() is run, award points from this function will be included
-        if (gemList.length > 0 && gemList.length % 3 == 0 && collide === false){
+        if (gemList.length > 0 && gemList.length % 3 === 0 && collide === false){
             bonus = bonus + 23;
             bonusPoint = true;//to write the word BONUS on screen
         }
@@ -420,7 +419,7 @@ Gem.prototype = {
             bonusSpeed = 2;
             //clear gems from lower award area
             gemList = [];
-            ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height)
+            ctxGems.clearRect(0, 0, canvasGems.width, canvasGems.height);
             ctxGems.font='20px Arial';
             ctxGems.textAlign= 'center';
             ctxGems.fillText('Fill Your Gem Pouch to Slow the Bugs', canvasGems.width/2, canvasGems.height/2);
